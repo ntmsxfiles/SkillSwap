@@ -45,17 +45,21 @@ export const getLikedSkills = (): string[] | null => {
 export const toggleLikedSkillsInStorage = (skillId: string): void => {
   try {
     const likedSkills = getLikedSkills();
-    let result = [];
+    let result: string[] = [];
+
     if (!likedSkills) {
-      // Обработка ситуации, когда возвращается null
-      result.push(skillId);
+      result = [skillId];
     } else {
-      const indexLike = likedSkills.indexOf(skillId);
-      indexLike !== -1
-        ? likedSkills.splice(indexLike, 1)
-        : likedSkills.push(skillId);
-      result = likedSkills;
+      result = [...likedSkills]; // Создаём копию массива
+      const indexLike = result.indexOf(skillId);
+      
+      if (indexLike !== -1) {
+        result.splice(indexLike, 1); // Удаляем элемент
+      } else {
+        result.push(skillId); // Добавляем элемент
+      }
     }
+
     localStorage.setItem("likedSkills", JSON.stringify(result));
     EventEmitterWrapper.publish(EventType.updateLikedUser, result);
   } catch (error) {

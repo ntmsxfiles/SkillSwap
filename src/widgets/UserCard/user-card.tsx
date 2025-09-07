@@ -11,6 +11,7 @@ import {
 import { getAgeWithDeclension } from "@shared/lib/utils/ageDeclension";
 import isEqual from "lodash/isEqual";
 import ClockIcon from "@assets/icons/clock.svg?react";
+import type { User } from "@entities/User/types";
 
 export const UserCard: FC<UserCardProps> = ({
   user,
@@ -27,17 +28,22 @@ export const UserCard: FC<UserCardProps> = ({
   }, [user]);
 
   useLayoutEffect(() => {
-    const reqString = localStorage.getItem("Request");
-    if (!reqString) {
-      return;
-    }
-    const req = JSON.parse(reqString);
-    const hasSwap = req.some(
-      //проверяем, был ли уже предложен обмен
-      (item: any) => isEqual(item.userForSwap.id, user.id),
-    );
-    setIsHasSwap(hasSwap);
-  }, []);
+  const reqString = localStorage.getItem("Request");
+  if (!reqString) {
+    return;
+  }
+  
+  type SwapRequest = {
+    userForSwap: User;
+    skillForSwap: unknown;
+  };
+
+  const req: SwapRequest[] = JSON.parse(reqString);
+  const hasSwap = req.some((item) => 
+    isEqual(item.userForSwap.id, user.id)
+  );
+  setIsHasSwap(hasSwap);
+}, [user.id]);
 
   const handleDetailsClick = () => {
     if (onButtonClick) {

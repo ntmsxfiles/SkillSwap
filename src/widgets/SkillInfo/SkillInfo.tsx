@@ -39,20 +39,19 @@ export const SkillInfo: FC<SkillInfoProps> = ({ user, skill }) => {
     setIsLiked(likedSkills?.includes(user.id));
   }, [user]);
 
-  useLayoutEffect(() => {
-    const reqString = localStorage.getItem("Request");
-    if (!reqString) {
-      return;
-    }
-    const req = JSON.parse(reqString);
-    const hasSwap = req.some(
-      //проверяем, был ли уже предложен обмен
-      (item: any) =>
-        isEqual(item.skillForSwap, skill) &&
-        isEqual(item.userForSwap.id, user.id)
-    );
-    setExchangeOffered(hasSwap);
-  }, []);
+ useLayoutEffect(() => {
+  const reqString = localStorage.getItem("Request");
+  if (!reqString) {
+    return;
+  }
+  const req: Array<{ skillForSwap: UserSkill | null; userForSwap: User }> = JSON.parse(reqString);
+  const hasSwap = req.some(
+    (item) =>
+      isEqual(item.skillForSwap, skill) &&
+      isEqual(item.userForSwap.id, user.id)
+  );
+  setExchangeOffered(hasSwap);
+}, [skill, user.id]); 
 
   const handleOfferClick = () => {
     const isAuth = getAuth();
